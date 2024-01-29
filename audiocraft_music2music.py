@@ -151,7 +151,7 @@ def main(args):
         le_cmd = [
             _model_runner_py, _model_run, 
             "--prompt", f'"{targs["prompt"]}"', 
-            "--audio_length", str(int(tags['audio_length'])),
+            "--audio_length", str(int(targs['audio_length'])),
             "--respath", str(out_filename),
             "--audio_path", str(_req_audio),
             "--guidance_scale", str(int(targs["guidance_scale"])),
