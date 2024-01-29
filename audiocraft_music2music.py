@@ -36,7 +36,7 @@ CONFIG_PATH = os.path.join(DESOTA_ROOT_PATH, "Configs")
 SERV_CONF_PATH = os.path.join(CONFIG_PATH, "services.config.yaml")
 # DeSOTA Funcs [END]
 #SET FOR TRANSFORMERS ENV::
-ENV_PATH = os.path.join(DESOTA_ROOT_PATH,"assets","transformers")
+ENV_PATH = os.path.join(DESOTA_ROOT_PATH,"Portables","Transformers")
 
 
 def main(args):
@@ -123,7 +123,7 @@ def main(args):
 
         targs = {}
         if 'prompt' in targs:
-            if targs['prompt'] == '-=#{([$argument$])}#=-':
+            if targs['prompt'] == '$initial-prompt$':
                 targs['prompt'] = _req_text
         else:
             targs['prompt'] = _req_text
