@@ -9,6 +9,32 @@ import subprocess
 # Define the output path for the synthesized video
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+# DeSOTA Funcs [START]
+#   > Import DeSOTA Scripts
+from desota import detools
+#   > Grab DeSOTA Paths
+USER_SYS = detools.get_platform()
+APP_PATH = os.path.dirname(os.path.realpath(__file__))
+TMP_PATH = os.path.join(CURRENT_PATH, f"tmp")
+#IN_PATH = os.path.join(CURRENT_PATH, f"in")
+#   > USER_PATH
+if USER_SYS == "win":
+    path_split = str(APP_PATH).split("\\")
+    desota_idx = [ps.lower() for ps in path_split].index("desota")
+    USER=path_split[desota_idx-1]
+    USER_PATH = "\\".join(path_split[:desota_idx])
+elif USER_SYS == "lin":
+    path_split = str(APP_PATH).split("/")
+    desota_idx = [ps.lower() for ps in path_split].index("desota")
+    USER=path_split[desota_idx-1]
+    USER_PATH = "/".join(path_split[:desota_idx])
+DESOTA_ROOT_PATH = os.path.join(USER_PATH, "Desota")
+CONFIG_PATH = os.path.join(DESOTA_ROOT_PATH, "Configs")
+SERV_CONF_PATH = os.path.join(CONFIG_PATH, "services.config.yaml")
+
+ENV_PATH = os.path.join(DESOTA_ROOT_PATH,"Portables","Transformers")
+
+
 TMP_PATH = os.path.join(CURRENT_PATH, f"tmp")
 OUT_PATH = os.path.join(TMP_PATH, f"out.mp4")
 OUT_NAME = "out"
@@ -108,23 +134,29 @@ def AudioThread(query, args=args):
     res = None
     # Check that required arguments are provided
     if not args.prompt :
-        sys.exit("Please provide a prompt")
+        exit(1)
 
     # Convert source video path to Path object
     audio_path = args.audio_path
     output_path = args.respath
     if int(args.mode)>1:
         if not os.path.isfile(audio_path):
-            sys.exit("Source audio not found")
+            exit(1)
     try:
         shutil.rmtree(TMP_PATH)
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
 
     os.makedirs(TMP_PATH, exist_ok=True)
+
+    if USER_SYS == "win":
+        _model_runner_py = os.path.join(ENV_PATH, "env", "python.exe")
+    elif USER_SYS == "lin":
+        _model_runner_py = os.path.join(ENV_PATH, "env", "bin", "python3")
+
     # Build the command for subprocess
     command = [
-        "python",
+        _model_runner_py,
         INF_PATH,
         "--prompt", str(args.prompt),
         "--audio_path", str(audio_path),
@@ -137,7 +169,7 @@ def AudioThread(query, args=args):
     ]
 
     # Execute the subprocess
-    subprocess.run(command, check=True)
+    subprocess.check_output(" ".join(command))
     return OUT_PATH
 
 def main(args):

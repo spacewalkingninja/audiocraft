@@ -9,7 +9,10 @@ import scipy
 import torch
 import torchaudio
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
-
+#import ssl
+#ssl._create_default_https_context = ssl._create_unverified_context
+## huggingface.co now has a bad SSL certificate, your lib internally tries to verify it and fails. By adding the env variable, you basically disabled the SSL verification. But, this is actually not a good thing. Probably a work around only. All communications will be unverified in your app because of this. – Kris Apr 1, 2022 at 4:32
+os.environ['CURL_CA_BUNDLE'] = ''
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 parser = argparse.ArgumentParser(description='text 2 audio or audio 2 audio ')
@@ -33,7 +36,7 @@ if int(args.model_mode) == 3: #'music-continuation':
 if int(args.model_mode) == 4: #'music-to-music':
     mode = 4
 print(mode)   
-    
+
 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -62,10 +65,11 @@ def extract_sound_length(soundfile):
 
 # Using small model, better results would be obtained with `medium` or `large`.
 
-processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
-model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
 
+processor = AutoProcessor.from_pretrained(os.path.join(dir_path, "model"),local_files_only=True)
+
+model = MusicgenForConditionalGeneration.from_pretrained(os.path.join(dir_path, "model"),local_files_only=True)
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 model.to(device)
 

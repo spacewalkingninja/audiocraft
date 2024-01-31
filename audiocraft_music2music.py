@@ -2,6 +2,7 @@ import os, sys
 import time, re, json, shutil
 import requests, subprocess, random
 import argparse
+os.environ['CURL_CA_BUNDLE'] = ''
 parser = argparse.ArgumentParser()
 parser.add_argument("-mr", "--model_req", 
                     help="DeSOTA Request as yaml file path",
@@ -192,13 +193,11 @@ def main(args):
         detools.user_chown(out_filepath)
         print(f"Path to report:\n\t{report_path}")
     else:
-        with open(out_filepath, "r") as fr:
-            deurlcruncher_res = json.loads(fr.read())
         if DEBUG:
             with open(os.path.join(APP_PATH, "debug.txt"), "a") as fw:
-                fw.write(f"RESULT: {json.dumps(deurlcruncher_res)}")
+                fw.write(f"RESULT: {out_filepath}")
 
-        print(f"[ INFO ] -> DeSotaControlAudio Response:{json.dumps(deurlcruncher_res, indent=2)}")
+        print(f"[ INFO ] -> DeSotaControlAudio Response:{out_filepath}")
 
         # DeSOTA API Response Preparation
         files = []

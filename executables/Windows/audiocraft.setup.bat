@@ -133,6 +133,7 @@ set user_path=%UserProfile%
 :TEST_PASSED
 :: Model VARS
 set model_path=%user_path%\%model_path_basepath%
+set model_checkpoint_path=%user_path%\%model_path_basepath%\model
 set python_main=%user_path%\%python_main_basepath%
 :: Miniconda (virtual environment) Vars
 set conda_path=%user_path%\%conda_basepath%
@@ -154,9 +155,24 @@ IF NOT EXIST %model_path% (
 )
 
 :: Move to Project Folder
-::ECHO.
-::ECHO %info_h1%Step 1/6 - Move (cd) to Project Path%ansi_end%
-::call cd %model_path% >NUL 2>NUL
+ECHO.
+ECHO %info_h1%Step 1/2 - Move (cd) to Project Path%ansi_end%
+call cd %model_path% >NUL 2>NUL
+
+ECHO.
+ECHO %info_h1% Step 2/2 - Download Model Files%ansi_end%
+ECHO %info_h2% This will most probably take a while... %ansi_end%
+ECHO %info_h2% Do not close! %ansi_end%
+
+IF %arg2_bool% EQU 1 (
+    set /p=Hit ENTER to continue *developer hint NOW MV OR COPY MODELS...
+)
+
+ECHO %info_h2% Downloading Audiocraft Small checkpoint %ansi_end%
+IF NOT EXIST %model_checkpoint_path% (
+    call git clone https://huggingface.co/facebook/musicgen-small model
+)
+ECHO.
 
 :: Install Conda Required
 ::ECHO.
