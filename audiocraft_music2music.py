@@ -3,6 +3,17 @@ import time, re, json, shutil
 import requests, subprocess, random
 import argparse
 os.environ['CURL_CA_BUNDLE'] = ''
+
+from requests.adapters import HTTPAdapter, Retry
+
+s = requests.Session()
+
+retries = Retry(total=5,
+                backoff_factor=0.1,
+                status_forcelist=[ 500, 502, 503, 504 ])
+
+s.mount('https://', HTTPAdapter(max_retries=retries))
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-mr", "--model_req", 
                     help="DeSOTA Request as yaml file path",
@@ -204,7 +215,7 @@ def main(args):
         with open(out_filepath, 'rb') as fr:
             files.append(('upload[]', fr))
             # DeSOTA API Response Post
-            send_task = requests.post(url = send_task_url, files=files)
+            send_task = s.post(url = send_task_url, files=files)
             print(f"[ INFO ] -> DeSOTA API Upload:{json.dumps(send_task.json(), indent=2)}")
         # Delete temporary file
         os.remove(out_filepath)
